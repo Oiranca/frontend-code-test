@@ -16,17 +16,18 @@ function Toolbar() {
 
     const addNewBox = () => {
         store.addBox({id: uuid(), color: getRandomColor(), left: 200, top: 50});
+        store.saveToLocalStorage();
     };
 
     const deleteBox = () => {
         store.deleteBox();
+        store.deletedToLocalStorage();
 
     };
 
     const changeColor = (event) => {
         store.changeColor(event.target.value);
     };
-
     return (
         <div className="toolbar">
             <button onClick={addNewBox}>Add Box</button>
