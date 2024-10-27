@@ -14,6 +14,11 @@ const MainStore = types
             },
             deleteBox() {
                 self.boxes.shift();
+            },
+            changeColor(color) {
+                self.boxes.filter(box => box.isSelected === true).forEach(box => {
+                    document.getElementById(`${box.id}`).style.backgroundColor = color;
+                });
             }
         };
     })

@@ -13,11 +13,15 @@ function Toolbar() {
 
     };
 
+    const changeColor = (event) => {
+        store.changeColor(event.target.value);
+    };
+
     return (
         <div className="toolbar">
             <button onClick={addNewBox}>Add Box</button>
             <button onClick={deleteBox}>Remove Box</button>
-            <input type="color"/>
+            <input onChange={changeColor} type="color"/>
             <span>No boxes selected</span>
         </div>
     );
