@@ -1,9 +1,19 @@
-import React from "react";
+import React, {useEffect} from "react";
+import {autorun} from "mobx"
 import store from "../stores/MainStore";
 import getRandomColor from "../utils/getRandomColor";
 import uuid from "uuid/v4";
 
 function Toolbar() {
+    const [count, setCount] = React.useState(0);
+    useEffect(() => {
+
+        autorun(() => {
+            const selectedBoxes = store.selectedBoxes;
+            setCount(selectedBoxes);
+        });
+    }, []);
+
     const addNewBox = () => {
         store.addBox({id: uuid(), color: getRandomColor(), left: 200, top: 50});
     };
@@ -22,7 +32,7 @@ function Toolbar() {
             <button onClick={addNewBox}>Add Box</button>
             <button onClick={deleteBox}>Remove Box</button>
             <input onChange={changeColor} type="color"/>
-            <span>No boxes selected</span>
+            <span>Box selected = {count} </span>
         </div>
     );
 }
