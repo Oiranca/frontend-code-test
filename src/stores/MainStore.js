@@ -2,13 +2,15 @@ import {types} from "mobx-state-tree";
 import uuid from "uuid/v4";
 import BoxModel from "./models/Box";
 import getRandomColor from "../utils/getRandomColor";
-import {autorun} from "mobx";
+import {UndoManager} from "mst-middlewares";
 
 const MainStore = types
     .model("MainStore", {
-        boxes: types.array(BoxModel)
+        boxes: types.array(BoxModel),
+        history: types.optional(UndoManager, {}),
     })
     .actions(self => {
+        setUndoManager(self);
         return {
             addBox(box) {
                 self.boxes.push(box);
@@ -57,8 +59,12 @@ const MainStore = types
         }
     }));
 
+export let undoManager = {};
+export const setUndoManager = (targetStore) => {
+    undoManager = targetStore.history;
+};
+const store = MainStore.create({}, {maxHistoryLength: 10});
 
-const store = MainStore.create();
 
 store.loadFromLocalStorage();
 
@@ -73,5 +79,6 @@ if (store.boxes.length === 0) {
     store.addBox(box1);
     store.saveToLocalStorage();
 }
+
 
 export default store;
