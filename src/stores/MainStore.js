@@ -33,6 +33,12 @@ const MainStore = types
                 });
 
             },
+            moveSelectedBoxes(dx, dy) {
+                self.boxes.filter(box => box.isSelected === true).forEach(box => {
+                    box.left += dx;
+                    box.top += dy;
+                });
+            },
             saveToLocalStorage() {
                 localStorage.setItem('boxes', JSON.stringify(self.boxes));
             },

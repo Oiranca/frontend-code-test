@@ -1,6 +1,7 @@
 import React, {useRef, useEffect} from "react";
 import {observer} from "mobx-react";
 import interact from "interactjs";
+import store from "../stores/MainStore";
 
 function BoxDraggable(props) {
     const elementRef = useRef(null);
@@ -22,6 +23,11 @@ function BoxDraggable(props) {
 
                         event.target.style.transform =
                             `translate(${position.x}px, ${position.y}px)`
+
+                        if (elementRef.current.classList.contains("selected")) {
+                            store.moveSelectedBoxes(event.dx, event.dy);
+                        }
+
                     }
                 }
             });
@@ -33,7 +39,7 @@ function BoxDraggable(props) {
         <div
             id={props.id}
             ref={elementRef}
-            className="box"
+            className={`box ${props.isSelected ? "selected" : ""}`}
             style={{
                 backgroundColor: props.color,
                 width: props.width,
