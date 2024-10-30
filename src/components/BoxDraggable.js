@@ -25,7 +25,7 @@ function BoxDraggable(props) {
                             `translate(${position.x}px, ${position.y}px)`
 
                         if (elementRef.current.classList.contains("selected")) {
-                            store.moveSelectedBoxes(event.dx, event.dy);
+                            store.moveSelectedBoxes(event.dx, event.dy,elementRef);
                         }
 
                     }

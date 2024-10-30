@@ -33,10 +33,39 @@ const MainStore = types
                 });
 
             },
-            moveSelectedBoxes(dx, dy) {
-                self.boxes.filter(box => box.isSelected === true).forEach(box => {
-                    box.left += dx;
-                    box.top += dy;
+            moveSelectedBoxes(dx, dy, elementRef) {
+                const limitRestriction = elementRef.current.parentNode.getBoundingClientRect();
+                const data = localStorage.getItem('boxes');
+
+                const newPositions = box => {
+                    const positionLeft = Math.min(
+                        Math.max(box.left + dx, 0),
+                        limitRestriction.width - box.width
+                    );
+                    const positionTop = Math.min(
+                        Math.max(box.top + dy, 0),
+                        limitRestriction.height - box.height
+                    );
+                    return {positionLeft, positionTop};
+                };
+
+                const updatePositionStorage = (box, positionTop, positionLeft) => {
+                    if (data) {
+                        const boxes = JSON.parse(data);
+                        const index = boxes.findIndex((item) => item.id === box.id);
+                        boxes[index].top = positionTop;
+                        boxes[index].left = positionLeft;
+                        localStorage.setItem('boxes', JSON.stringify(boxes));
+                    }
+                };
+
+                self.boxes.filter(box => box.isSelected).forEach(box => {
+                    const {positionLeft, positionTop} = newPositions(box);
+                    updatePositionStorage(box, positionTop, positionLeft);
+
+
+                    box.left = positionLeft;
+                    box.top = positionTop;
                 });
             },
             saveToLocalStorage() {
