@@ -28,6 +28,7 @@ html,
     touch-action: none;
     max-width: 1200px;
     max-height: 675px;
+    margin-top: 1rem;
 }
 
 .box {
