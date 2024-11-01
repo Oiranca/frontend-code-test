@@ -32,14 +32,7 @@ function Toolbar() {
         store.changeColor(event.target.value);
     };
     return (
-        <div className="toolbar"  style={{
-            display: "flex",
-            flexDirection:'row',
-            justifyContent: "center",
-            padding: "10px",
-            columnGap: "10px",
-            width: "100%",
-        }}>
+        <div className="toolbar">
             <button onClick={addNewBox}>Add Box</button>
             <button onClick={deleteBox}>Remove Box</button>
             <input onChange={changeColor} type="color"/>

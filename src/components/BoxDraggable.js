@@ -25,7 +25,7 @@ function BoxDraggable(props) {
                             `translate(${position.x}px, ${position.y}px)`
 
                         if (elementRef.current.classList.contains("selected")) {
-                            store.moveSelectedBoxes(event.dx, event.dy,elementRef);
+                            store.moveSelectedBoxes(event.dx, event.dy, elementRef);
                         }
 
                     }
@@ -45,7 +45,7 @@ function BoxDraggable(props) {
                 width: props.width,
                 height: props.height,
                 transform: `translate(${props.left}px, ${props.top}px)`,
-                border: props.isSelected ? "3px inset #beff33" : "none"
+                border: props.isSelected ? "3px inset #beff33" : "none",
             }}
             onClick={props.onSelect}
         >
