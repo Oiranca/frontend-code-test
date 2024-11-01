@@ -22,7 +22,7 @@ const MainStore = types
                 const data = localStorage.getItem('boxes');
 
                 self.boxes.filter(box => box.isSelected === true).forEach(box => {
-                    document.getElementById(`${box.id}`).style.backgroundColor = color;
+                    box.color = color;
                     if (data) {
                         const boxes = JSON.parse(data);
                         const index = boxes.findIndex((item) => item.id === box.id);
