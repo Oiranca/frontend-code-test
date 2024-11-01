@@ -23,11 +23,11 @@ html,
 
 .canva {
     width: 90vw;
-    height: 675px;
+    height: 80vh;
     background-color: aliceblue;
     touch-action: none;
     max-width: 1200px;
-
+    max-height: 675px;
 }
 
 .box {
@@ -60,4 +60,3 @@ html,
 .toolbar span {
     color: white;
 }
-
