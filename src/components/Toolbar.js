@@ -26,7 +26,6 @@ function Toolbar() {
             id: uuid(), color: getRandomColor(), left: Math.floor(Math.random() * (leftLimit - 200)),
             top: Math.floor(Math.random() * (topLimit - 100)),
         });
-        store.saveToLocalStorage();
     };
 
     const deleteBox = () => {

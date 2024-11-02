@@ -3,6 +3,8 @@ import uuid from "uuid/v4";
 import BoxModel from "./models/Box";
 import getRandomColor from "../utils/getRandomColor";
 import {UndoManager} from "mst-middlewares";
+import {autorun} from "mobx";
+
 
 const MainStore = types
     .model("MainStore", {
@@ -14,28 +16,21 @@ const MainStore = types
         return {
             addBox(box) {
                 self.boxes.push(box);
+                store.saveToLocalStorage();
             },
             deleteBox() {
                 self.boxes.shift();
+                store.deletedToLocalStorage();
             },
             changeColor(color) {
-                const data = localStorage.getItem('boxes');
-
-                self.boxes.filter(box => box.isSelected === true).forEach(box => {
+                store.isSelected().forEach(box => {
                     box.color = color;
-                    if (data) {
-                        const boxes = JSON.parse(data);
-                        const index = boxes.findIndex((item) => item.id === box.id);
-                        boxes[index].color = color;
-                        localStorage.setItem('boxes', JSON.stringify(boxes));
-                    }
+                    store.saveChanges(box);
 
                 });
-
             },
             moveSelectedBoxes(dx, dy, elementRef) {
                 const limitRestriction = elementRef.current.parentNode.getBoundingClientRect();
-                const data = localStorage.getItem('boxes');
 
                 const newPositions = box => {
                     const positionLeft = Math.min(
@@ -49,24 +44,14 @@ const MainStore = types
                     return {positionLeft, positionTop};
                 };
 
-                const updatePositionStorage = (box, positionTop, positionLeft) => {
-                    if (data) {
-                        const boxes = JSON.parse(data);
-                        const index = boxes.findIndex((item) => item.id === box.id);
-                        boxes[index].top = positionTop;
-                        boxes[index].left = positionLeft;
-                        localStorage.setItem('boxes', JSON.stringify(boxes));
-                    }
-                };
-
-                self.boxes.filter(box => box.isSelected).forEach(box => {
+                store.isSelected().forEach(box => {
                     const {positionLeft, positionTop} = newPositions(box);
-                    updatePositionStorage(box, positionTop, positionLeft);
-
-
                     box.left = positionLeft;
                     box.top = positionTop;
+                    store.saveChanges(box);
+
                 });
+
             },
             saveToLocalStorage() {
                 localStorage.setItem('boxes', JSON.stringify(self.boxes));
@@ -85,7 +70,22 @@ const MainStore = types
                     const boxes = JSON.parse(data);
                     self.boxes.replace(boxes);
                 }
-            }
+            },
+            saveChanges(box) {
+                const data = localStorage.getItem('boxes');
+                if (data) {
+                    const boxes = JSON.parse(data);
+                    const index = boxes.findIndex((item) => item.id === box.id);
+                    if (index > -1) {
+                        Object.assign(boxes[index], box);
+                        localStorage.setItem('boxes', JSON.stringify(boxes));
+                    }
+                }
+            },
+            isSelected() {
+                return self.boxes.filter(box => box.isSelected === true)
+            },
+
         };
     })
     .views(self => ({
