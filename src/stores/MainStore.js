@@ -3,7 +3,6 @@ import uuid from "uuid/v4";
 import BoxModel from "./models/Box";
 import getRandomColor from "../utils/getRandomColor";
 import {UndoManager} from "mst-middlewares";
-import {autorun} from "mobx";
 
 
 const MainStore = types
