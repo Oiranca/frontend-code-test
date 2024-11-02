@@ -52,6 +52,20 @@ const MainStore = types
                 });
 
             },
+            repositionChild(parentNode) {
+                for (let entry of parentNode) {
+                    const newWidth = entry.contentRect.width;
+                    const newHeight = entry.contentRect.height;
+
+                    self.boxes.forEach(box => {
+                        box.left = Math.floor(Math.min(box.left, newWidth - box.width));
+                        box.top = Math.floor(Math.min(box.top, newHeight - box.height));
+                    });
+                }
+
+
+
+            },
             saveToLocalStorage() {
                 localStorage.setItem('boxes', JSON.stringify(self.boxes));
             },

@@ -34,6 +34,17 @@ function BoxDraggable(props) {
         }
     }, [props.left, props.top]);
 
+    useEffect(() => {
+        const parentNode = elementRef.current?.parentNode;
+        if (!parentNode) return;
+        const resizeObserver = new ResizeObserver(parent => {
+            store.repositionChild(parent);
+
+        });
+        resizeObserver.observe(parentNode);
+
+        return () => resizeObserver.disconnect();
+    }, []);
 
     return (
         <div
