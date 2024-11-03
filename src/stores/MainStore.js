@@ -10,7 +10,6 @@ const isSelectedFilter = self => self.boxes.filter(box => box.isSelected === tru
 const MainStore = types
     .model("MainStore", {
         boxes: types.array(BoxModel),
-        history: types.optional(UndoManager, {}),
     })
     .actions(self => {
         setUndoManager(self);
@@ -113,7 +112,7 @@ const MainStore = types
 
 export let undoManager = {};
 export const setUndoManager = (targetStore) => {
-    undoManager = targetStore.history;
+    undoManager = UndoManager.create({}, { targetStore });
 };
 const store = MainStore.create({}, {maxHistoryLength: 10});
 
