@@ -16,7 +16,6 @@ function Canvas({store}) {
                     height={box.height}
                     box={box}
                     isSelected={box.isSelected}
-                    onSelect={() => box.setSelectedBox()}
                 />
             ))}
         </div>

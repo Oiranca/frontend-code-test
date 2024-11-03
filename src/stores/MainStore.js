@@ -5,6 +5,8 @@ import getRandomColor from "../utils/getRandomColor";
 import {UndoManager} from "mst-middlewares";
 
 
+const isSelectedFilter = self => self.boxes.filter(box => box.isSelected === true);
+
 const MainStore = types
     .model("MainStore", {
         boxes: types.array(BoxModel),
@@ -20,9 +22,15 @@ const MainStore = types
             deleteBox() {
                 self.boxes.shift();
                 store.deletedToLocalStorage();
+            },  isSelected(id) {
+                self.boxes.filter(box => box.id === id).forEach(box => {
+                    box.isSelected = !box.isSelected;
+                    store.saveChanges(box);
+
+                });
             },
             changeColor(color) {
-                store.isSelected().forEach(box => {
+                isSelectedFilter(self).forEach(box => {
                     box.color = color;
                     store.saveChanges(box);
 
@@ -43,7 +51,7 @@ const MainStore = types
                     return {positionLeft, positionTop};
                 };
 
-                store.isSelected().forEach(box => {
+                isSelectedFilter(self).forEach(box => {
                     const {positionLeft, positionTop} = newPositions(box);
                     box.left = positionLeft;
                     box.top = positionTop;
@@ -52,8 +60,8 @@ const MainStore = types
                 });
 
             },
-            repositionChild(parentNode) {
-                for (let entry of parentNode) {
+            repositionChild(parent) {
+                for (let entry of parent) {
                     const newWidth = entry.contentRect.width;
                     const newHeight = entry.contentRect.height;
 
@@ -62,8 +70,6 @@ const MainStore = types
                         box.top = Math.floor(Math.min(box.top, newHeight - box.height));
                     });
                 }
-
-
 
             },
             saveToLocalStorage() {
@@ -95,15 +101,13 @@ const MainStore = types
                     }
                 }
             },
-            isSelected() {
-                return self.boxes.filter(box => box.isSelected === true)
-            },
+
 
         };
     })
     .views(self => ({
         get selectedBoxes() {
-            return self.boxes.filter(box => box.isSelected === true).length;
+            return isSelectedFilter(self).length;
         }
     }));
 

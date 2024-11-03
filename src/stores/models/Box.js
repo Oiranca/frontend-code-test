@@ -11,10 +11,6 @@ const BoxModel = types
         isSelected: false
     })
     .views(self => ({}))
-    .actions(self => ({
-        setSelectedBox() {
-            self.isSelected = !self.isSelected;
-        }
-    }));
+    .actions(self => ({}));
 
 export default BoxModel;

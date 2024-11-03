@@ -46,6 +46,10 @@ function BoxDraggable(props) {
         return () => resizeObserver.disconnect();
     }, []);
 
+    const handledSelectedBox = () => {
+        store.isSelected(elementRef.current.id)
+    };
+
     return (
         <div
             id={props.id}
@@ -58,7 +62,7 @@ function BoxDraggable(props) {
                 transform: `translate(${props.left}px, ${props.top}px)`,
                 border: props.isSelected ? "3px inset #beff33" : "none",
             }}
-            onClick={props.onSelect}
+            onClick={handledSelectedBox}
         >
             {props.children}
         </div>
