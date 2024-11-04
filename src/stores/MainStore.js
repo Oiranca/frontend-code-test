@@ -35,6 +35,20 @@ const MainStore = types
 
                 });
             },
+            moveBox(event, position) {
+                position.x += event.dx
+                position.y += event.dy
+                event.target.style.transform =
+                    `translate(${position.x}px, ${position.y}px)`
+
+                const box = self.boxes.find(box => box.id === event.target.id);
+                if (box) {
+                    box.left += event.dx;
+                    box.top += event.dy;
+                    store.saveChanges(box);
+                }
+
+            },
             moveSelectedBoxes(dx, dy, elementRef) {
                 const limitRestriction = elementRef.current.parentNode.getBoundingClientRect();
 
@@ -65,8 +79,8 @@ const MainStore = types
                     const newHeight = entry.contentRect.height;
 
                     self.boxes.forEach(box => {
-                        box.left = Math.floor(Math.min(box.left, newWidth - box.width));
-                        box.top = Math.floor(Math.min(box.top, newHeight - box.height));
+                        box.left = Math.floor(Math.min(Math.max(box.left, 0), newWidth - box.width));
+                        box.top = Math.floor(Math.min(Math.max(box.top, 0), newHeight - box.height));
                     });
                 }
 
@@ -116,7 +130,7 @@ export let undoManager = {};
 export const setUndoManager = (targetStore) => {
     undoManager = UndoManager.create({}, {targetStore});
 };
-const store = MainStore.create({}, {maxHistoryLength: 10});
+const store = MainStore.create();
 
 
 store.loadFromLocalStorage();
