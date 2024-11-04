@@ -21,7 +21,7 @@ const MainStore = types
             deleteBox() {
                 self.boxes.shift();
                 store.deletedToLocalStorage();
-            },  isSelected(id) {
+            }, isSelected(id) {
                 self.boxes.filter(box => box.id === id).forEach(box => {
                     box.isSelected = !box.isSelected;
                     store.saveChanges(box);
@@ -39,14 +39,14 @@ const MainStore = types
                 const limitRestriction = elementRef.current.parentNode.getBoundingClientRect();
 
                 const newPositions = box => {
-                    const positionLeft = Math.min(
+                    const positionLeft = Math.floor(Math.min(
                         Math.max(box.left + dx, 0),
-                        limitRestriction.width - box.width
+                        limitRestriction.width - box.width)
                     );
-                    const positionTop = Math.min(
+                    const positionTop = Math.floor(Math.min(
                         Math.max(box.top + dy, 0),
                         limitRestriction.height - box.height
-                    );
+                    ));
                     return {positionLeft, positionTop};
                 };
 
@@ -83,11 +83,13 @@ const MainStore = types
                 }
             },
             loadFromLocalStorage() {
-                const data = localStorage.getItem('boxes');
-                if (data) {
-                    const boxes = JSON.parse(data);
-                    self.boxes.replace(boxes);
-                }
+                undoManager.withoutUndo(() => {
+                    const data = localStorage.getItem('boxes');
+                    if (data) {
+                        const boxes = JSON.parse(data);
+                        self.boxes.replace(boxes);
+                    }
+                });
             },
             saveChanges(box) {
                 const data = localStorage.getItem('boxes');
@@ -112,7 +114,7 @@ const MainStore = types
 
 export let undoManager = {};
 export const setUndoManager = (targetStore) => {
-    undoManager = UndoManager.create({}, { targetStore });
+    undoManager = UndoManager.create({}, {targetStore});
 };
 const store = MainStore.create({}, {maxHistoryLength: 10});
 
