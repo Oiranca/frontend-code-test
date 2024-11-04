@@ -14,7 +14,6 @@ function BoxDraggable(props) {
                 modifiers: [
                     interact.modifiers.restrictRect({
                         restriction: 'parent',
-                        endOnly: true
                     })
                 ],
                 listeners: {
@@ -22,7 +21,6 @@ function BoxDraggable(props) {
                         if (elementRef.current.classList.contains("selected")) {
                             store.moveSelectedBoxes(event.dx, event.dy, elementRef);
                         } else {
-
                             store.moveBox(event, position);
                         }
 
