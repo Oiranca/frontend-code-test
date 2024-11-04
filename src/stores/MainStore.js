@@ -1,4 +1,4 @@
-import {types} from "mobx-state-tree";
+import {applySnapshot, types} from "mobx-state-tree";
 import uuid from "uuid/v4";
 import BoxModel from "./models/Box";
 import getRandomColor from "../utils/getRandomColor";
@@ -20,18 +20,19 @@ const MainStore = types
             },
             deleteBox() {
                 self.boxes.shift();
-                store.deletedToLocalStorage();
+                store.saveToLocalStorage();
+
             }, isSelected(id) {
                 self.boxes.filter(box => box.id === id).forEach(box => {
                     box.isSelected = !box.isSelected;
-                    store.saveChanges(box);
+                    store.saveToLocalStorage();
 
                 });
             },
             changeColor(color) {
                 isSelectedFilter(self).forEach(box => {
                     box.color = color;
-                    store.saveChanges(box);
+                    store.saveToLocalStorage();
 
                 });
             },
@@ -45,7 +46,7 @@ const MainStore = types
                 if (box) {
                     box.left += event.dx;
                     box.top += event.dy;
-                    store.saveChanges(box);
+                    store.saveToLocalStorage();
                 }
 
             },
@@ -68,7 +69,7 @@ const MainStore = types
                     const {positionLeft, positionTop} = newPositions(box);
                     box.left = positionLeft;
                     box.top = positionTop;
-                    store.saveChanges(box);
+                    store.saveToLocalStorage();
 
                 });
 
@@ -88,33 +89,14 @@ const MainStore = types
             saveToLocalStorage() {
                 localStorage.setItem('boxes', JSON.stringify(self.boxes));
             },
-            deletedToLocalStorage() {
-                const data = localStorage.getItem('boxes');
-                if (data) {
-                    const boxes = JSON.parse(data);
-                    boxes.shift();
-                    localStorage.setItem('boxes', JSON.stringify(boxes));
-                }
-            },
             loadFromLocalStorage() {
                 undoManager.withoutUndo(() => {
                     const data = localStorage.getItem('boxes');
                     if (data) {
                         const boxes = JSON.parse(data);
-                        self.boxes.replace(boxes);
+                        applySnapshot(self.boxes, boxes);
                     }
                 });
-            },
-            saveChanges(box) {
-                const data = localStorage.getItem('boxes');
-                if (data) {
-                    const boxes = JSON.parse(data);
-                    const index = boxes.findIndex((item) => item.id === box.id);
-                    if (index > -1) {
-                        Object.assign(boxes[index], box);
-                        localStorage.setItem('boxes', JSON.stringify(boxes));
-                    }
-                }
             },
 
 
@@ -125,10 +107,9 @@ const MainStore = types
             return isSelectedFilter(self).length;
         }
     }));
-
 export let undoManager = {};
 export const setUndoManager = (targetStore) => {
-    undoManager = UndoManager.create({}, {targetStore});
+    undoManager = UndoManager.create({}, { targetStore, maxHistoryLength: 50 });
 };
 const store = MainStore.create();
 
