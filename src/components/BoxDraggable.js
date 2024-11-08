@@ -1,14 +1,16 @@
-import React, {useRef, useEffect} from "react";
+import React, {useRef, useEffect, useState} from "react";
 import {observer} from "mobx-react";
 import interact from "interactjs";
 import store from "../stores/MainStore";
 
 function BoxDraggable(props) {
+    const [position, setPosition] = useState({x: props.left, y: props.top});
     const elementRef = useRef(null);
+    useEffect(() => {
+        setPosition({x: props.left, y: props.top});
+    }, [props.left,props.top]);
 
     useEffect(() => {
-        const position = {x: props.left, y: props.top};
-
         if (elementRef.current) {
             interact(elementRef.current).draggable({
                 modifiers: [
@@ -17,18 +19,28 @@ function BoxDraggable(props) {
                     })
                 ],
                 listeners: {
+
                     move: event => {
                         if (elementRef.current.classList.contains("selected")) {
                             store.moveSelectedBoxes(event.dx, event.dy, elementRef);
                         } else {
-                            store.moveBox(event, position);
+                            setPosition(prevPosition => ({
+                                x: prevPosition.x + event.dx,
+                                y: prevPosition.y + event.dy
+                            }));
+                            event.target.style.transform = `translate(${position.x}px, ${position.y}px)`;
                         }
 
-                    }
+                    },
+                    end: event => {
+                        store.moveBox(position, event.target.id);
+
+
+                    },
                 }
             });
         }
-    }, [props.left, props.top]);
+    }, [position, props.left, props.top]);
 
     useEffect(() => {
         const parentNode = elementRef.current?.parentNode;

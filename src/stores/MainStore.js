@@ -36,16 +36,11 @@ const MainStore = types
 
                 });
             },
-            moveBox(event, position) {
-                position.x += event.dx
-                position.y += event.dy
-                event.target.style.transform =
-                    `translate(${position.x}px, ${position.y}px)`
-
-                const box = self.boxes.find(box => box.id === event.target.id);
+            moveBox(position, id) {
+                const box = self.boxes.find(box => box.id === id);
                 if (box) {
-                    box.left += event.dx;
-                    box.top += event.dy;
+                    box.left = position.x;
+                    box.top = position.y;
                     store.saveToLocalStorage();
                 }
 
@@ -109,7 +104,7 @@ const MainStore = types
     }));
 export let undoManager = {};
 export const setUndoManager = (targetStore) => {
-    undoManager = UndoManager.create({}, { targetStore, maxHistoryLength: 50 });
+    undoManager = UndoManager.create({}, {targetStore, maxHistoryLength: 50});
 };
 const store = MainStore.create();
 
