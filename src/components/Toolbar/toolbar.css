@@ -3,7 +3,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 10px;
+    padding: 10px 0;
     column-gap: 10px;
     row-gap: 10px;
     width: 100%;
@@ -12,7 +12,6 @@
     span {
         width: max-content;
         align-content: center;
-        padding: 5px;
     }
 
 }
