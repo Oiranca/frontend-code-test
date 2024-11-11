@@ -1,14 +1,14 @@
 import React, {useRef, useEffect, useState} from "react";
 import {observer} from "mobx-react";
 import interact from "interactjs";
-import store from "../stores/MainStore";
+import store, {undoManager} from "../../../../../../stores/MainStore";
 
 function BoxDraggable(props) {
     const [position, setPosition] = useState({x: props.left, y: props.top});
     const elementRef = useRef(null);
     useEffect(() => {
         setPosition({x: props.left, y: props.top});
-    }, [props.left,props.top]);
+    }, [props.left, props.top]);
 
     useEffect(() => {
         if (elementRef.current) {
@@ -33,6 +33,7 @@ function BoxDraggable(props) {
 
                     },
                     end: event => {
+                        localStorage.setItem('undoManager', JSON.stringify(undoManager));
                         store.moveBox(position, event.target.id);
 
 

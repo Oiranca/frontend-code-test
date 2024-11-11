@@ -37,12 +37,15 @@ const MainStore = types
                 });
             },
             moveBox(position, id) {
-                const box = self.boxes.find(box => box.id === id);
-                if (box) {
-                    box.left = position.x;
-                    box.top = position.y;
-                    store.saveToLocalStorage();
-                }
+              undoManager.startGroup(()=>{
+                  const box = self.boxes.find(box => box.id === id);
+                  if (box) {
+                      box.left = position.x;
+                      box.top = position.y;
+                      store.saveToLocalStorage();
+                  }
+              });
+              undoManager.stopGroup();
 
             },
             moveSelectedBoxes(dx, dy, elementRef) {
@@ -104,7 +107,7 @@ const MainStore = types
     }));
 export let undoManager = {};
 export const setUndoManager = (targetStore) => {
-    undoManager = UndoManager.create({}, {targetStore, maxHistoryLength: 50});
+    undoManager = UndoManager.create({}, {targetStore, maxHistoryLength: 50, includeHooks: true});
 };
 const store = MainStore.create();
 
