@@ -1,11 +1,11 @@
-import {applySnapshot, types} from "mobx-state-tree";
+import {applySnapshot, getSnapshot, onSnapshot, types} from "mobx-state-tree";
 import uuid from "uuid/v4";
 import BoxModel from "./models/Box";
 import getRandomColor from "../utils/getRandomColor";
 import {UndoManager} from "mst-middlewares";
 
 
-const isSelectedFilter = self => self.boxes.filter(box => box.isSelected === true);
+const getSelectedBoxes = self => self.boxes.filter(box => box.isSelected === true);
 
 const MainStore = types
     .model("MainStore", {
@@ -16,33 +16,28 @@ const MainStore = types
         return {
             addBox(box) {
                 self.boxes.push(box);
-                store.saveToLocalStorage();
             },
             deleteBox() {
                 self.boxes.shift();
-                store.saveToLocalStorage();
 
-            }, isSelected(id) {
+            }, toggleSelected(id) {
                 self.boxes.filter(box => box.id === id).forEach(box => {
                     box.isSelected = !box.isSelected;
-                    store.saveToLocalStorage();
 
                 });
             },
             changeColor(color) {
-                isSelectedFilter(self).forEach(box => {
+                getSelectedBoxes(self).forEach(box => {
                     box.color = color;
-                    store.saveToLocalStorage();
 
                 });
             },
             moveBox(position, id) {
-                  const box = self.boxes.find(box => box.id === id);
-                  if (box) {
-                      box.left = position.x;
-                      box.top = position.y;
-                      store.saveToLocalStorage();
-                  }
+                const box = self.boxes.find(box => box.id === id);
+                if (box) {
+                    box.left = position.x;
+                    box.top = position.y;
+                }
 
             },
             moveSelectedBoxes(dx, dy, elementRef) {
@@ -60,11 +55,10 @@ const MainStore = types
                     return {positionLeft, positionTop};
                 };
 
-                isSelectedFilter(self).forEach(box => {
+                getSelectedBoxes(self).forEach(box => {
                     const {positionLeft, positionTop} = newPositions(box);
                     box.left = positionLeft;
                     box.top = positionTop;
-                    store.saveToLocalStorage();
 
                 });
 
@@ -82,24 +76,22 @@ const MainStore = types
 
             },
             saveToLocalStorage() {
-                localStorage.setItem('boxes', JSON.stringify(self.boxes));
+                const data = getSnapshot(self.boxes);
+                localStorage.setItem('boxes', JSON.stringify(data));
             },
             loadFromLocalStorage() {
-                undoManager.withoutUndo(() => {
-                    const data = localStorage.getItem('boxes');
-                    if (data) {
-                        const boxes = JSON.parse(data);
-                        applySnapshot(self.boxes, boxes);
-                    }
-                });
+                const data = localStorage.getItem('boxes');
+                if (data) {
+                    applySnapshot(self.boxes, JSON.parse(data));
+                }
             },
 
 
         };
     })
     .views(self => ({
-        get selectedBoxes() {
-            return isSelectedFilter(self).length;
+        get selectedBoxesCount() {
+            return getSelectedBoxes(self).length;
         }
     }));
 export let undoManager = {};
@@ -108,19 +100,21 @@ export const setUndoManager = (targetStore) => {
 };
 const store = MainStore.create();
 
+onSnapshot(store, snapshot => {
+    localStorage.setItem('boxes', JSON.stringify(snapshot.boxes));
+});
 
 store.loadFromLocalStorage();
+const createInitialBox = () => BoxModel.create({
+    id: uuid(),
+    color: getRandomColor(),
+    left: 0,
+    top: 0
+});
 
 if (store.boxes.length === 0) {
-    const box1 = BoxModel.create({
-        id: uuid(),
-        color: getRandomColor(),
-        left: 0,
-        top: 0
-    });
-
-    store.addBox(box1);
-    store.saveToLocalStorage();
+    const initialBox = createInitialBox()
+    store.addBox(initialBox);
 }
 
 

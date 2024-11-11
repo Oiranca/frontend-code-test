@@ -45,7 +45,7 @@ function BoxDraggable(props) {
 
 
     const handledSelectedBox = () => {
-        store.isSelected(elementRef.current.id)
+        store.toggleSelected(props.id);
     };
 
     return (

@@ -14,7 +14,7 @@ function Toolbar() {
 
     useEffect(() => {
         autorun(() => {
-            const selectedBoxes = store.selectedBoxes;
+            const selectedBoxes = store.selectedBoxesCount;
             setCount(selectedBoxes);
         });
     }, []);
