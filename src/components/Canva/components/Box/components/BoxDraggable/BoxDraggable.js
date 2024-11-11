@@ -1,7 +1,7 @@
-import React, {useRef, useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {observer} from "mobx-react";
 import interact from "interactjs";
-import store, {undoManager} from "../../../../../../stores/MainStore";
+import store from "../../../../../../stores/MainStore";
 
 function BoxDraggable(props) {
     const [position, setPosition] = useState({x: props.left, y: props.top});
@@ -33,7 +33,6 @@ function BoxDraggable(props) {
 
                     },
                     end: event => {
-                        localStorage.setItem('undoManager', JSON.stringify(undoManager));
                         store.moveBox(position, event.target.id);
 
 
@@ -43,7 +42,7 @@ function BoxDraggable(props) {
         }
     }, [position, props.left, props.top]);
 
-    ;
+
 
     const handledSelectedBox = () => {
         store.isSelected(elementRef.current.id)

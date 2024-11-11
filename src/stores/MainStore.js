@@ -37,15 +37,12 @@ const MainStore = types
                 });
             },
             moveBox(position, id) {
-              undoManager.startGroup(()=>{
                   const box = self.boxes.find(box => box.id === id);
                   if (box) {
                       box.left = position.x;
                       box.top = position.y;
                       store.saveToLocalStorage();
                   }
-              });
-              undoManager.stopGroup();
 
             },
             moveSelectedBoxes(dx, dy, elementRef) {
