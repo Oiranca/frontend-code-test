@@ -1,8 +1,7 @@
 import React from "react";
-
-import store from "../stores/MainStore";
-import Canvas from "./Canvas";
-import Toolbar from "./Toolbar";
+import store from "./stores/MainStore";
+import Canvas from "./components/Canva/Canvas";
+import Toolbar from "./components/Toolbar/Toolbar";
 import { observer } from "mobx-react";
 
 function App() {

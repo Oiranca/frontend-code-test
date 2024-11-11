@@ -1,9 +1,10 @@
 import React, {useEffect} from "react";
+import './toolbar.css';
 import {autorun} from "mobx"
-import store, {undoManager} from "../stores/MainStore";
-import getRandomColor from "../utils/getRandomColor";
+import store, {undoManager} from "../../stores/MainStore";
+import getRandomColor from "../../utils/getRandomColor";
 import uuid from "uuid/v4";
-import {useLimitRestriction} from "../hooks/useLimitRestriction";
+import {useLimitRestriction} from "../../hooks/useLimitRestriction";
 
 function Toolbar() {
     const [count, setCount] = React.useState(0);
